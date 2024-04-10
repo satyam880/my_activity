@@ -14,5 +14,6 @@
 
 # 10/04/2024
 
-- learnt react-redux
+- learnt react-redux and redux-toolkit
+- learn how to fetch data using reddux-toolkit-query(RTK)
   
