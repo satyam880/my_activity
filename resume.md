@@ -3,7 +3,6 @@
 
 ## Programming Languages
 - **C++**: Knowledge about STL for competitive programming
-- **Node.js**: Experienced in building server-side applications and APIs.
 - **Java**: Knowledgeable in Java (OOP'S, EXCEPTION HANDLING, MULTITHREADING)
 - **JavaScript**: Skilled in JavaScript for both frontend and backend development.
 
@@ -12,6 +11,7 @@
 - **MONGODB**:  Familiar with NO-SQL databases
 ## Web Development
 - **HTML/CSS**: Proficient in creating and styling web pages.
+- **Node.js**: Experienced in building server-side applications and APIs.
 - **ExpressJS**: Experienced in building web applications using Express.js.
 - **MongoDB**: Knowledgeable in using MongoDB for NoSQL database management.
 
