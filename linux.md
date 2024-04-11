@@ -58,7 +58,7 @@
 
 ## File Compression and Archiving Commands
 
-- **gzip**: Compress files.****
+- **gzip**: Compress files.
  - **Examples**: `gzip file.txt`.
 
 - **zip**: Create compressed zip archives.
