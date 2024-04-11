@@ -1,4 +1,4 @@
-`# Basic Linux Commands
+# Basic Linux Commands
 
 ## File Operations
 
