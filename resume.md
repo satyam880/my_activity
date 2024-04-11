@@ -18,8 +18,6 @@
 ## Operating Systems
 - **OS**: Understanding of operating system concepts.
 
-## Object-Oriented Programming
-- **OOPs**: Strong foundation in object-oriented programming principles.
 
 
 # PROJECTS
