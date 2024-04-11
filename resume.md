@@ -34,10 +34,9 @@
 
 - **Technology Used**: ReactJS, Node.js
 - **Description**: This Website fetches data from API, and provides us with weather enrichment service for real-time forecasts.
-- **GitHub Repository**: [https://github.com/Satyam-codelab/weather](https://github.com/Satyam-codelab/weather)
+
 
 ## File Compressor
 
 - **Technology Used**: C++ (Huffman Coding)
 - **Description**: The File Compressor with the help of greedy algorithms compresses a file into zipped form and can be reverted back to its original form as per the requirements.
-- **GitHub Repository**: [https://github.com/Satyam-codelab/ﬁle](https://github.com/Satyam-codelab/ﬁle)
