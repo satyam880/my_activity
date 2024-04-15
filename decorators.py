@@ -28,17 +28,20 @@ running_function()
 
 
 def debug(func):
-    def wrapper(*args):
+    def wrapper(*args,**kwargs):
         args_value= (",").join(str(arg) for arg in args)
-        print(f"calling {func.__name__} with {args_value}")
-
+        kw_args=  (',').join(f" {k}->{v}" for k,v in kwargs.items())
+        print(f"calling {func.__name__} with args {args_value} and kwargs{kw_args}")
+        result= func(*args,**kwargs)
+        return result
     return wrapper
 
 
 
 @debug
-def database(arg1,arg2):
+def database(name,description,use="development", db="database"):
     print("database is called")
 
 
-database("mongodb","sql")
+database("mongodb", "sql", use="development", db="database")
+

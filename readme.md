@@ -24,3 +24,4 @@
 # 15/04/2024
 - learnt OOP's in Python [link](https://github.com/satyam880/my_activity/blob/main/oops.py)
 - learnt decorators in Python [link](https://github.com/satyam880/my_activity/blob/main/decorators.py)
+- leart virtualenv [link]()
