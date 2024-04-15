@@ -17,3 +17,10 @@
 - learnt react-redux and redux-toolkit
 - learn how to fetch data using reddux-toolkit-query(RTK)
   
+# 11/04/2024
+- laernt about django-rest-framework
+- how to fetch data from django backend to react
+
+# 15/04/2024
+- learnt OOP's in Python
+- learnt decorators in Python 

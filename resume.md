@@ -1,5 +1,5 @@
 # Resume
-# Skills
+## Skills
 
 ## Programming Languages
 - **C++**: Knowledge about STL for competitive programming
