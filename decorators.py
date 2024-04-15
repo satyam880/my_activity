@@ -3,23 +3,23 @@ import time
 # 1. timing function
 
 
-# def toll(func):
-#     def wrapper():
-#         start=time.time()
-#         print("Before called")
-#         result=func()
-#         print("After called")
-#         end=time.time()
-#         print(f"{func.__name__} ran in {end-start}")
-#         return result
-#     return wrapper
+def toll(func):
+    def wrapper():
+        start=time.time()
+        print("Before called")
+        result=func()
+        print("After called")
+        end=time.time()
+        print(f"{func.__name__} ran in {end-start}")
+        return result
+    return wrapper
 
-# @toll
-# def running_function():
-#     print("I am called")
-#     time.sleep(3)
+@toll
+def running_function():
+    print("I am called")
+    time.sleep(3)
 
-# running_function()
+running_function()
 
 # running_function= toll(running_Function)
 
