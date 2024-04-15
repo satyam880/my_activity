@@ -18,9 +18,9 @@
 - learn how to fetch data using reddux-toolkit-query(RTK)
   
 # 11/04/2024
+-learnt linux commands [link](https://github.com/satyam880/my_activity/blob/main/linux.md)
 - laernt about django-rest-framework
-- how to fetch data from django backend to react
 
 # 15/04/2024
-- learnt OOP's in Python
-- learnt decorators in Python 
+- learnt OOP's in Python [link](https://github.com/satyam880/my_activity/blob/main/oops.py)
+- learnt decorators in Python [link](https://github.com/satyam880/my_activity/blob/main/decorators.py)
