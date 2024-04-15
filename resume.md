@@ -11,6 +11,7 @@
 - **MONGODB**:  Familiar with NO-SQL databases
 ## Web Development
 - **HTML/CSS**: Proficient in creating and styling web pages.
+- **React.js** : for single-page-routing and frontend dev
 - **Node.js**: Experienced in building server-side applications and APIs.
 - **ExpressJS**: Experienced in building web applications using Express.js.
 - **MongoDB**: Knowledgeable in using MongoDB for NoSQL database management.
