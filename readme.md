@@ -25,3 +25,5 @@
 - learnt OOP's in Python [link](https://github.com/satyam880/my_activity/blob/main/oops.py)
 - learnt decorators in Python [link](https://github.com/satyam880/my_activity/blob/main/decorators.py)
 - leart virtualenv [link](https://github.com/satyam880/my_activity/blob/main/venv.md)
+- learnt exception handling in python [link](https://github.com/satyam880/my_activity/blob/main/exception.py)
+- learnt multithreafing in python [link](https://github.com/satyam880/my_activity/blob/main/multithreading.py)
