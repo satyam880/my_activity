@@ -377,3 +377,161 @@
 
 # 16/04/2024
 
+<details>
+<summary>Subproceess</summary>
+
+## Subprocess
+```python
+import subprocess
+
+def sp():
+    python_scipt_path="./index.py"
+    python_process=subprocess.run(["python3",python_scipt_path], stdout=subprocess.PIPE)
+
+    print(python_process.stdout.decode())
+
+sp()
+```
+![alt text](image-1.png)
+![Python running](image.png)
+
+</details>
+
+<details>
+<summary>Python dataStructures</summary>
+
+## Python dataStructures
+```python
+# list
+list1 = ['physics', 'chemistry', 1997, 2000]
+list2 = [1, 2, 3, 4, 5, 6, 7 ]
+print ("list1[0]: ", list1[0])
+print ("list2[1:5]: ", list2[1:5])
+```
+![alt text](image-2.png)
+
+```python
+# tiples
+tup1 = ('physics', 'chemistry', 1997, 2000)
+tup2 = (50,)
+print ("tup1[1:5]: ", tup1[1:5])
+```
+![alt text](image-3.png)
+
+```python
+#dictionary
+dict = {'Name': 'Zara', 'Age': 7, 'Class': 'First'}
+print ("dict['Name']: ", dict['Name'])
+print ("dict['Age']: ", dict['Age'])
+```
+![alt text](image-4.png)
+
+```python
+#sets
+Months={"Jan","Feb","Feb"}
+Days=set(["Mon","Tue","Wed","Mon","Tue","Wed",])
+print(Days)
+print(Months)
+```
+![alt text](image-5.png)
+</details>
+
+---
+
+# 17/04/2024
+
+<details>
+<summary>Pandas</summary>
+
+```python
+import pandas as pd
+import numpy as np
+
+#Series
+s=pd.Series([1,2,3,np.nan])
+print (s)
+```
+![alt text](image-6.png)
+
+```python
+
+#DataFrames
+df= pd.DataFrame(
+    {
+        "X":5.0,
+        "T":pd.Timestamp("20240417"),
+        "D":pd.date_range("20240417",periods=4),
+        "A":np.array([5]*4,dtype="int32")
+    }
+)
+print(df)
+```
+![alt text](image-8.png)
+```
+print(df.head(2))
+```
+![alt text](image-9.png)
+```
+print(df.tail(1))
+```
+![alt text](image-10.png)
+
+```
+print(df.index)
+```
+![alt text](image-11.png)
+
+</details>
+
+<details>
+<summary>Docker</summary>
+
+```python
+#Start docker service
+service docker start
+
+#See docker status
+service docker status
+```
+![alt text](image-13.png)
+
+
+
+## Start Container
+docker start satyam <br>
+![alt text](image-14.png)
+
+## Go inside Container
+docker attach satyam
+
+## See all containers (stopped+running)
+docker ps -a <br>
+![alt text](image-20.png)
+
+## See all running Containers
+docker ps <br>
+![alt text](image-15.png)
+
+## Deleting Containers
+docker rm satyam
+![alt text](image-21.png)
+
+## Create image of container
+docker commit satyam upimage <br>
+![alt text](image-17.png)
+
+## Create dockerfile
+vi Dockerfile <br>
+![alt text](image-18.png)
+
+## Craete image from Dockerfile
+docker build -t imgdockerfile . <br>
+![alt text](image-19.png)
+
+## Create container from image
+docker run -it --name satyam ubuntu /bin/bash <br>
+
+![alt text](image-16.png)
+
+
+</details>
