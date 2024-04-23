@@ -411,7 +411,7 @@ print ("list2[1:5]: ", list2[1:5])
 ![alt text](image-2.png)
 
 ```python
-# tiples
+# tuples
 tup1 = ('physics', 'chemistry', 1997, 2000)
 tup2 = (50,)
 print ("tup1[1:5]: ", tup1[1:5])
@@ -481,6 +481,22 @@ print(df.index)
 ```
 ![alt text](image-11.png)
 
+```
+print(df.to_numpy())
+```
+![alt text](image-22.png)
+
+```
+print(df.sort_index(axis=1,ascending=False))
+```
+![alt text](image-23.png)
+
+
+```
+print(df.sort_values(by="D"))
+```
+![alt text](image-24.png)
+
 </details>
 
 <details>
@@ -532,6 +548,141 @@ docker build -t imgdockerfile . <br>
 docker run -it --name satyam ubuntu /bin/bash <br>
 
 ![alt text](image-16.png)
+
+
+</details>
+
+---
+
+# 19/04/2024
+
+<details>
+<summary>Docker</summary>
+
+## Docker network expose
+
+
+```python
+# network : host-container
+
+# runs in background
+docker run -td --name cont -p 3000:3000 img
+```
+
+![alt text](image-25.png)
+
+## runs the conatiner and opens shell
+
+```
+docker run -it --name cont1 -p 3000:3000 img bash
+```
+![alt text](image-26.png)
+
+## check the port of container
+```
+docker port cont
+```
+![alt text](image-27.png)
+## or
+```
+docker ps -a
+```
+![alt text](image-28.png)
+
+## go inside the existing container having network exposed
+
+```
+docker exec -it cont1 bash
+```
+![alt text](image-29.png)
+
+</details>
+
+<details>
+<summary> MultiStage Docker </summary>
+<br>
+
+**This approach allows developers to compile or build applications in one stage, using a full-featured image that includes all necessary build tools and dependencies, and then copy only the compiled application or necessary files into a smaller, more secure runtime image. This results in a final image that is significantly smaller in size, contains only the necessary components to run the application, and reduces the attack surface by excluding unnecessary build tools and dependencies.**
+```python
+# First stage: Build the application
+FROM ubuntu AS backend-builder
+RUN apt update && apt-get install curl -y
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+RUN apt-get install -y nodejs
+WORKDIR /app
+COPY . .
+RUN npm install
+
+# Second stage: Setup the runtime environment
+FROM node:21-slim
+WORKDIR /app
+
+# Copy only the application code, not the node_modules directory
+COPY --from=backend-builder /app .
+EXPOSE 3000
+ENTRYPOINT [ "node","server.js" ]
+```
+</details>
+---
+
+# 22/04/2024
+
+<details>
+<summary>CI/CD PIPELINE</summary>
+
+**Whenever developers write code, we integrate all that code of all developers at that point of time we build, test and deploy to the client. This process is called CI/CD.
+Jenkins helps us to achieve this. Because of CI, bugs will be reported fast to the clients and rectified at earlier stage. So the entire software development cycle happens fast.**
+
+<br/>
+
+![alt text](image-30.png)
+
+</details>
+
+<details>
+<summary>Jenkins</summary>
+
+## enable jenkins service to start at boot
+```
+sudo systemctl enable jenkins
+```
+## start jenkins service
+```
+sudo systemctl start jenkins
+```
+## status of jenkins
+```
+sudo systemctl status jenkins
+```
+![alt text](image-31.png)
+</details>
+<details>
+<summary>Integrated Jenkins with git , jdk,  maven , jdk</summary>
+
+## click on Manage Jenkins
+![alt text](image-32.png)
+
+## Under System Configuration click on tools
+![alt text](image-33.png)
+
+
+## jdk integration
+![alt text](image-36.png)
+
+## git integration
+![alt text](image-34.png)
+
+## maven integration
+![alt text](image-35.png)
+
+
+</details>
+
+<details>
+<summary>Building in Jenkins</summary>
+<br>
+
+
 
 
 </details>
