@@ -589,7 +589,7 @@ docker ps -a
 ```
 ![alt text](image-28.png)
 
-## go inside the existing container having network exposed
+## go inside the existing container 
 
 ```
 docker exec -it cont1 bash
@@ -678,11 +678,417 @@ sudo systemctl status jenkins
 
 </details>
 
+---
+# 23/04/2024
+
 <details>
-<summary>Building in Jenkins</summary>
-<br>
+<summary>Integrate MySql with Django</summary>
+
+```python
+#run
+ sudo apt-get install python3-dev default-libmysqlclient-dev build-essential pkg-config
+  pip install mysqlclient
+
+```
+
+```python
+# RUN in MYSQL
+CREATE DATABASE dj_server
+USE dj_Server
+CREATE USER satyam@localhost IDENTIFIED BY 'Satyam@123'
+GRANT ALL PRIVILEGES ON dj_server.* TO satyam@localhost
+```
+```python
+# We can login on MySql using
+sudo mysql -u satyam -p
+```
+
+```python
+# Configure it in settings.py of django-app root folder
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "dj_server",
+        "USER": "satyam",
+        "PASSWORD": "Satyam@123",
+        "HOST": "127.0.0.1",
+        "PORT": "3306",
+    }
+}
+```
+</details>
+
+# 24/04/2024
+<details>
+<summary>Custom User Model in Django</summary>
+
+```python
+# managers.py
+from django.contrib.auth.models import BaseUserManager
+
+class UserManager(BaseUserManager):
+    use_in_migrations = True
+    def create_user(self,phone,email,password=None,**extra_fields):
+        
+        if not phone:
+            raise ValueError('USer must have phone no')
+        
+        email=self.normalize_email(email)
+
+        user= self.model(
+            phone=phone,
+            email=email,
+            **extra_fields
+        )
+        user.set_password(password)
+        user.save(using =self._db)
+        return user
 
 
+    def create_superuser(self,phone,email,password=None,**extra_fields):
+        
+        extra_fields.setdefault('is_staff',True)
+        extra_fields.setdefault('is_superuser',True)
+        extra_fields.setdefault('is_active',True)
+        user=self.create_user(
+            phone,
+            email,
+            password,
+            **extra_fields
+        )
 
+
+        user.save(using=self._db)
+
+        return user
+```
+```python
+# models.py
+
+from django.db import models
+from django.contrib.auth.models import AbstractUser
+from .manager import *
+# Create your models here.
+
+class CustomUser(AbstractUser):
+
+    username=None
+    name=models.CharField(max_length=50)
+
+    email=models.EmailField(max_length=50,unique=True)
+    phone=models.IntegerField(unique=True)
+    bio =models.CharField(max_length=200)
+
+    USERNAME_FIELD="phone"
+    REQUIRED_FIELDS=["email"]
+    objects=UserManager()
+
+
+    def __str__(self) -> str:
+        return self.email
+    
+```
+```python
+#register in admin.py
+admin.site.register(CustomUser)
+
+# set it in settings.py of root folder
+AUTH_USER_MODEL='accounts.CustomUser'
+```
+</details>
+
+
+# 25/04/2024
+
+<details>
+<summary>CRUD operations in Django </summary>
+
+```python
+# urls.py
+from django.contrib import admin
+from django.urls import path
+from .views import *
+
+urlpatterns = [
+    path('',EmployeeAPI.as_view()),
+    path('register',RegisterAPI.as_view())
+]
+```
+
+```python
+# serializers.py
+
+from rest_framework import serializers
+from .models import *
+from django.contrib.auth.models import User
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=User
+        fields=["username","password"]
+
+    def create(self, validated_data):
+        user=User.objects.create(username=validated_data['username'])
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
+    
+class EmployeeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Employee
+        fields="__all__"
+
+```
+
+```python
+# views.py 
+from django.shortcuts import render
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .serializers import *
+from .models import *
+# Create your views here.
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.models import User
+
+class EmployeeAPI(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    def get(self,req):
+        Employee_objs=Employee.objects.all()
+        serializer=EmployeeSerializer(Employee_objs,many=True)
+        return Response({'status':'200', 'payload':serializer.data, 'message':"Kaise ho bhai"})
+
+
+    def post(self,req):
+        data= req.data
+        serializer=EmployeeSerializer(data=data)
+
+        if not serializer.is_valid():
+            return Response({'status':400, 'errors':serializer.errors,'message':"Can't serialize"})
+        
+        serializer.save()
+
+        return Response({'status':200,'payload':data, 'message':'data saved'})
+    
+    def patch(self,req):
+        try:
+
+            data=req.data
+            current_user= Employee.objects.get(id=data['id'])
+            serializer=EmployeeSerializer(current_user, data=req.data,partial=True)
+
+            if not serializer.is_valid():
+                return Response({'status':400, 'errors':serializer.errors,'message':"Can't serialize"})
+            
+            serializer.save()
+
+            return Response({'status':200,'payload':data, 'message':'data saved'})
+        
+        except Exception as e:
+            return Response({'status':400,'message':"invalid id"})
+        
+
+    def delete(self,req):
+        try:
+            data=req.data
+            current_user= Employee.objects.get(id=data['id'])
+            current_user.delete()
+            return Response({'status':200, "message":"User deleted"})
+        except Exception as e:
+            return Response({'status':400,'message':"Invalid Id"})
+        
+    
+
+class  RegisterAPI(APIView):
+    def post(self,req):
+        data=req.data
+        serializer=UserSerializer(data=data)
+        if not serializer.is_valid():
+            return Response({'status':200,'message':serializer.errors})
+        
+        serializer.save()   
+        user=User.objects.get(username=serializer.data['username'])
+        refresh = RefreshToken.for_user(user)
+        token = refresh.access_token
+        return  Response({'status':200,'message':'registered','token':str(token)})
+    
+```
+</details>
+
+
+<details>
+<summary>JWT AUTHENTICATION </summary>
+
+```python
+pip install django djangorestframework djangorestframework_simplejwt
+
+# installed_Apps in setitings.py
+  'rest_framework',
+    'rest_framework_simplejwt',
+```
+```python
+# rest_framework in settins.py
+REST_FRAMEWORK = {
+    
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+    
+}
+
+```
+```python
+# in views.py import
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken 
+
+```
+```python
+# wherever y require, simply load the classes[ authentication_classes and permission_classes]
+class EmployeeAPI(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    def get(self,req):
+        Employee_objs=Employee.objects.all()
+        serializer=EmployeeSerializer(Employee_objs,many=True)
+        return Response({'status':'200', 'payload':serializer.data, 'message':"Kaise ho bhai"})
+```
+
+</details>
+
+# 29/04/2024
+
+<details>
+<summary>DockerCompose</summary>
+
+```python
+services:
+    web:
+        image:"nginx"
+    rcache:
+        image:"redis:${redis-tag}"
+    db:
+        image:mysql
+ 
+```
+```python
+# to see the configurations in dockercompose
+docker compose config
+```
+```python
+# create and start containers in dockercompose.yml
+docker compose up -d
+```
+```python
+# see all containers definded in dockercompose
+docker compose ps -a
+```
+```python
+# to go inside conatiners started in dockeer
+docker compose exec web bash
+```
+```python
+# to stop down the conatiners in dockercompose
+docker compose down
+```
+
+```python
+# through environment keywords
+
+services:
+    db:
+        image:mysql
+        environmnet:
+        - MYSQL_ROOT_PASSWORD=hi123
+
+```
+```python
+# through environment files
+
+services:
+    db:
+        image:mysql
+        env_file:
+        - mysql.config
+
+```
+
+```python
+# providing profiles to services
+
+services:
+    db:
+        image:mysql
+        env_file:
+        - mysql.config
+        profiles:
+            database
+
+# if we want db service to perform any operation , we need to mention it's profile must
+
+docker compose --profile database config
+
+docker compose --profile database up -d
+
+```
+```python
+# depends_on
+
+services:
+    web:
+        image:"nginx"
+        depends_on:
+        - rcache
+        - mysql
+
+    rcache:
+        image:"redis:${redis-tag}"
+    db:
+        image:mysql
+```
+
+```python
+# ports exposure
+services:
+    web:
+        image:"nginx"
+        depends_on:
+        - rcache
+        - mysql
+
+        ports:
+        - 8000:80 # host m/c -> container
+    rcache:
+        image:"redis:${redis-tag}"
+    db:
+        image:mysql
+
+```
+
+```python
+# network exposure
+services:
+    web:
+        image:"nginx"
+        depends_on:
+        - rcache
+        - mysql
+
+        ports:
+        - 8000:80 # host m/c -> container
+
+        networks:
+        - my_network #custom network to which service nginx will operate on
+    rcache:
+        image:"redis:${redis-tag}"
+    db:
+        image:mysql
+
+```
 
 </details>
