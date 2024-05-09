@@ -1092,3 +1092,231 @@ services:
 ```
 
 </details>
+
+# 30/04/2024
+
+- revised all the concepts of docker and jenkins
+- debugged the errors of django app and mysql integration
+
+# 02/05/2024
+<details>
+<summary>Dockerized a django+mysql app</summary>
+
+```python
+# docker-compose .yml
+services:
+  docker-service:
+    build: .
+    container_name: drf
+    image: drf-image
+    ports:
+      - 8000:8000
+    depends_on:
+      - database
+    command: python manage.py runserver 0.0.0.0:8000
+  database:
+    restart: always
+    container_name: dbcont
+    image: mysql
+    volumes:
+      - vol1:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root@123 
+      - MYSQL_DATABASE=dj_work
+       
+volumes:
+  vol1:
+
+```
+</details>
+
+<details>
+<summary> MultiStage Docker </summary>
+<br>
+
+**This approach allows developers to compile or build applications in one stage, using a full-featured image that includes all necessary build tools and dependencies, and then copy only the compiled application or necessary files into a smaller, more secure runtime image. This results in a final image that is significantly smaller in size, contains only the necessary components to run the application, and reduces the attack surface by excluding unnecessary build tools and dependencies.**
+```python
+# First stage: Build the application
+FROM ubuntu AS backend-builder
+RUN apt update && apt-get install curl -y
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+RUN apt-get install -y nodejs
+WORKDIR /app
+COPY . .
+RUN npm install
+
+# Second stage: Setup the runtime environment
+FROM node:21-slim
+WORKDIR /app
+
+# Copy only the application code, not the node_modules directory
+COPY --from=backend-builder /app .
+EXPOSE 3000
+ENTRYPOINT [ "node","server.js" ]
+```
+</details>
+
+---
+
+# 03/05/2024
+
+<details>
+<summary> React-Redux data management</summary>
+
+```python
+# slices.js
+import { createSlice } from '@reduxjs/toolkit'
+
+
+export const userSlice=createSlice({
+  name: 'slice1',
+  initialState:{
+    list:[],
+    curr:""
+  } ,
+  curr:"",
+  reducers: {
+    
+    get_user:(state,action)=>{
+        state.list=action.payload;
+    },
+    // add_user:(state,action)=>{
+
+    // },
+    edit_user:(state,action)=>{
+      let ind= state.list.findIndex(user=>user._id==action.payload)
+        state.curr=state.list[ind]
+    },
+    delete_user:(state,action)=>{
+      state.list=state.list.filter(user=>user._id!==action.payload)
+    }
+
+  },
+})
+
+// Action creators are generated for each case reducer function
+export const {get_user, add_user, edit_user, delete_user } = userSlice.actions
+
+export default userSlice.reducer
+```
+
+```python
+# store.js
+import { configureStore } from '@reduxjs/toolkit'
+import userReducer from './slices'
+
+
+export default configureStore({
+  reducer: {
+    userStore:userReducer
+  },
+})
+```
+
+```python
+# main.js [wrapping up APP with Provider]
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+import "./index.css"
+import { ApiProvider } from '@reduxjs/toolkit/query/react'
+import { myApi } from './rtk/services.js'
+import { Provider } from 'react-redux'
+import store from "./store/store.js"
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+
+<Provider store={store}>
+ 
+    <App />
+
+    </Provider>
+  </React.StrictMode>,
+)
+```
+
+```python
+# to send data to states
+import { useDispatch,useSelector } from 'react-redux';
+
+  const data= useSelector((state)=>{
+    return state.userStore.list
+  });
+  console.log(data);
+
+  const getAllUsers=async()=>{
+    
+      const response = await fetch ("http://localhost:7000/api/show",{
+        headers:{
+          'Content-Type':'application.json',
+        },
+        method:"GET"
+      })
+
+      if(response.ok){
+        const data= await response.json();
+        dispatch(get_user(data));
+      }
+  }
+
+
+```
+
+```python
+# to get data from state
+import { useSelector } from 'react-redux';
+
+export const CreateContact = () => {
+
+  const data= useSelector((state)=>{
+    return state.userStore.list
+  });
+  console.log(data);
+
+```
+
+</details>
+
+---
+
+# 06/05/2024
+
+<details>
+<summary>RTK Query</summary>
+
+```python
+# creating services
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+
+export const myApi = createApi({
+  reducerPath: 'api',
+  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:7000/api/' }),
+  endpoints: (builder) => ({
+    getAllUsers: builder.query({
+      query:()  => "show",
+    }),
+  }),
+})
+
+export const { useGetAllUsersQuery } = myApi
+```
+```python
+# wrapping up main.js with store
+import { myApi } from './rtk/services.js'
+
+ <ApiProvider api={myapi}>
+    <App />
+</ApiProvider>
+
+```
+
+```python
+ # using api wherever needed
+import {useGetAllUsersQuery} from '../rtk/servcies'
+ const App=()=>{
+    const [data,error,isLoading,isSuccess,isError]=
+    useGetAllUsersQuery("")
+ }
+````
+</deatils>
