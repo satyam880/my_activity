@@ -1319,4 +1319,297 @@ import {useGetAllUsersQuery} from '../rtk/servcies'
     useGetAllUsersQuery("")
  }
 ````
-</deatils>
+</details>
+
+---
+
+# 07/05/2024
+ - set up openhorizon configuration on my laptop
+
+---
+
+# 08/05/2024
+- analyzed code of open horizon and database
+
+# 09/05/2024
+- analyzed mysql tables of openhorizon project and found relationship among them
+- tried to dockerize darabase code of openhorizon
+
+# 10/05/2024
+- tried on dockerizing mysql image
+- mysql is unable to connect to localhost through socket
+
+# 16/05/2024
+- revised all the docker concepts 
+- tried to dockerize backend image
+
+# 17/05/2024
+- dockerized backend image taking  python as base image
+- port exposed and tested 
+- facing problems with migrations  
+
+# 20/05/2024
+- learnt about different volume drivers 
+- implemented volumes for monitoring backend container
+- facing problems with migrations
+
+# 21/05/2024
+- implemented volumes for mysql for persistent storage
+- backend conatiner facing problems with logs 
+
+# 22/05/2024
+- tried to connect backend container with local mysql server
+- tried to fix up log issues with backend container
+
+# 23/05/2024
+- fixed up issue with logging of backend contaienrs
+- facing problems with migrations of backend containers
+
+# 24/05/2024
+- tried to implement wait script in backend container to apply migrations
+- analyzing wait-for-it script
+
+# 27/05/2024
+- implemented wait-for-it script in backend container to apply migrations
+- explored docker networks
+
+# 28/05/2024
+- tried to connect backend container  with local mysql through host network and bridge network
+- explored which option among host and bridge is good to have
+
+# 29/05/2024
+- connected backend container with local mysql server with dns name "host.docker.internal" and gateway "host:gateway"
+- similarly watched on healthscript as an alternative for wait-for-it script since it requires conection to github which may be time consuming
+
+# 30/05/2024
+- implemented healthcare for database container and established service dependency from backend container to database container through healthchecks
+- put backend container and database container in a BRIDGE NETWORK
+- used backend contaiers to run both in dev-env(runserver) and prod-env(gunicorn with wsgi and asgi)
+
+# 31/05/2024
+- set up guniciorn sockets in my local system
+- explored about gunicorn sockets and ports
+- explored about wsgi(web server gateway interface,[synchronous]) and asgi(asynchronous server gateway interface[asynchronous]) and which is good to have
+
+# 03/06/2024
+- tried to dockerize frontend image
+- learnt about docker cache mechanisms
+- implemented cache mechanisms in frontend containers 
+- tried multistaging mechanism in backend container
+
+# 04/06/2024
+- implemented multistaging in frontend container  through build file made in Stage1
+- frontend image size reduced from 2.2 GB to 470 MB
+- frontend container to run in dev-env(npm start) and prod-env(npm serve)
+
+# 05/06/2024
+- implemented volumes in frontend conatainers for persistent storage
+- made frontend, backend ,and databse containers in same network and ensured that they are able to connect with each other
+
+# 07/06/2024
+- analyzed develop-watch actions for implementing dynamic changes in dev environment
+- tried to implement watch in all the conatiners
+
+# 10/06/2024
+- we have 3 options : sync , sync+restart, rebuild, explored which option to mantain in which situations
+- restart is giving SIGTERM error, tried to debug
+
+# 11/06/2024
+- SIGTERM error is caused because the default containers which docker create are special containers treated by docker, so by initailizing "init:true",
+    we can instruct docker to treat them as processes under pid-1
+- tried  restart options: on-failure, unless-stopped and always
+
+# 12/06/2024
+- tried edge cases regarding changes to env, requirements.txt, package.json
+- made ppt for open-horizon demonstration of dockerization
+
+# 13/06/2024
+- tried edge cases for volumes in docker-compose
+- demonstration of ppt 
+
+# 14/06/2024
+<details>
+<summary>architecture of kubernetes</summary>
+- Master (Control Plane) and Worker/minion <br>
+- Master node contains Control Manager, kube scheduler, etcd cluster and API-Server<br>
+Control Manager: Makes sure that actual state of cluster matches to desired state
+- The components of api-server are:
+
+    - kube api-server: api server interacts directly with the user and scales automatically as per load
+    - etcd : stores metadata and states of cluster, fully replicated-> entire state is avialable on every node on cluster
+    - kube-scheduler : it assigns any node to create and run pods. For every pod that scheduler discovers, it becomes responsible for finding the best node for that pod.
+
+Worker/ Minion nodes:
+
+    - kubelet: agent running on node and listening to master node . Uses port 10255
+    - Container Engine: works with kubenet. Pulling images, Exposing containers on ports specified
+    - kube-proxy- assigns IP address to each pod. By ruuning on each node, it makes sure that each pod will get it's own unique IP address
+    - POD : Smallest unit of k8s. It is a group of one or more containers deployed on same host(node)
+</details>
+<details>
+<summary> Working with minikube </summary>
+
+    - to get all pods running:
+        kubectl get pods:
+    - to get ip addresses of all pods running:
+        kubectl get pods -o wide
+    - to see what all activies occured on pod:
+        kubectl describe pod pod_name 
+    - to see the logs of containers running on pods:
+        kubectl logs -f testpod -c c01
+    - to delete a pod:
+        kubectl delete pod testpod
+            or
+        kubectl delete -f mypod.yml
+    - to go inside container of pod
+        kubectl exec testpod -it -c c01 -- /bin/bash
+    
+
+ </details>
+ 
+# 17/06/2024
+<details>
+<summary>Labels </summary>
+
+    - kind:POd
+      apiVersion:v1
+      metadata:
+        name:testpod
+        labels:
+            env: dev
+            class: tg
+    - to get pods with labels:
+     kubectl get pods --show-labels
+    - add labels to existiing pods:
+        kubectl label pods testpod -- myname=satyam
+    - list pods matching a label:
+        kubectl get pods -l env=dev
+    - list pods not matching a label:
+        kubectl get pods -l env!=dev
+
+</details>
+
+<details>
+<summary>Label-Selectors</summary>
+
+    Equality based:
+        kubectl get pods -l myname=satyam, env=dev
+    Set based:
+        kubectl get pods -l 'env not in (prod,test)'
+</details>
+
+<details>
+<summary>Node- Selectors</summary>
+
+    label the node:
+        kubectl label node node_name hardware=t2_medium
+
+    testpod.yml:
+    kind:Pod
+    apiVersion:v1
+    metadata:
+        name:testpod
+    spec:
+        containers:
+            -name:c00
+             image:ubuntu
+             command:[]
+    nodeSelector:
+        hardware:t2-medium
+
+</details>
+
+# 18/06/2024
+
+<details>
+<summary>Replication </summary>
+
+    kind:ReplicationController
+    apiVersion: v1
+    metadata:
+        name:myreplica
+    spec:
+        replicas:4
+        selector:
+            myname:satyam
+    template:
+        metadata:
+            name:testpod
+        labels:
+            myname:satyam
+        spec:
+          containers:
+            -name:c00
+             image:ubuntu
+             command:[]
+
+kubectl get rc
+kubectl describe rc myreplica
+
+scale up/down the replicas
+kubectl scale --replicas=8 rc -l myname=satyam
+</details>
+
+<details>
+<summary>Replica Set</summary>
+
+    kind:REplicationSet
+    apiVersion:v1
+    metadata:
+        name:myrs
+    spec:
+        replicas:2
+        selector:
+            matchExpressions:
+                - {key:env, operator:In, values:['dev','develop','development']}
+    template:
+        metadata:
+            name:testpod
+            labels:
+                env:develop
+        spec:
+          containers:
+            -name:c00
+             image:ubuntu
+             command:[]
+
+    kubectl get rs
+    kubectl scale --replicas=1 rs myrs
+</details>
+<details>
+<summary>Deployment and Rollback</summary>
+
+    Deployment->ReplicaSet->Pods
+
+    mydeploy.yml:
+    kind: Deployment
+    apiVersion:v1
+    metadata:
+        myname:mydeploy
+    spec:
+        replicas:4
+        selector:
+            matchLabels:
+                name:prod
+    template:
+        metadata:
+            name:testpod
+            labels:
+                name:prod
+        spec:
+          containers:
+            -name:c00
+             image:ubuntu
+             command:[]
+
+    kubectl get deploy
+    kubectl describe deploy mydeploy
+    kubectl scale --replicas=1 deploy mydeploy
+
+    -> Now, did some changes in mydeploy.yml
+    kubectl rollout status deploy mydeploy
+    kubectl rollout history deploy mydeploy
+    kubectl rollout undo deploy mydeploy
+
+
+</details>
